@@ -18,6 +18,13 @@ namespace Grapher
 
         public double X { get; set; }
         public double Y { get; set; }
+
+        internal Pt TranslatePolar(double angle, double r)
+        {
+            var dx = r * Math.Cos(angle);
+            var dy = r * Math.Sin(angle);
+            return new Pt(X + dx, Y + dy); // not sure if this is correct
+        }
     }
 
     internal class Tick
@@ -37,25 +44,25 @@ namespace Grapher
     {
         private bool _uniScaleQ; // use uniform scaling? (same scale in both directions)
 
-        private double _xScale; // calculated 
         private double _xLogScale; // calculated 
-        private double _yScale; // calculated 
         private double _yLogScale; // calculated
 
         public double XStart { get; private set; } // graph x start
         public double YStart { get; private set; } // graph y start
         public double XEnd { get; private set; } // graph x end
         public double YEnd { get; private set; } // graph y end
+        public double XScale { get; private set; }  // calculated 
+        public double YScale { get; private set; } // calculated 
 
-        public double Left { get; private set; } // canvas left
-        public double Top { get; private set; } // canvas top
-        public double Width { get; private set; } // canvas width
-        public double Height { get; private set; } // canvas height
+        public int Left { get; private set; } // canvas left
+        public int Top { get; private set; } // canvas top
+        public int Width { get; private set; } // canvas width
+        public int Height { get; private set; } // canvas height
 
         public bool UseXLog { get; private set; } // use log x scaling?
         public bool UseYLog { get; private set; } // use log y scaling?
 
-        public Coords(double left, double top, double width, double height, double xStt, double yStt, double xEnd, double yEnd, bool uniScaleQ)
+        public Coords(int left, int top, int width, int height, double xStt, double yStt, double xEnd, double yEnd, bool uniScaleQ)
         {
             Left = left;
             Top = top;
@@ -98,10 +105,10 @@ namespace Grapher
         /// </summary>
         public void Drag(double xPix, double yPix)
         {
-            XStart += xPix * _xScale;
-            XEnd += xPix * _xScale;
-            YStart += yPix * _yScale;
-            YEnd += yPix * _yScale;
+            XStart += xPix * XScale;
+            XEnd += xPix * XScale;
+            YStart += yPix * YScale;
+            YEnd += yPix * YScale;
             CalcScale();
         }
 
@@ -110,11 +117,11 @@ namespace Grapher
         /// </summary>
         public void NewCenter(double x, double y)
         {
-            var xMid = XStart + x * _xScale;
+            var xMid = XStart + x * XScale;
             var xhalfspan = (XEnd - XStart) / 2;
             XStart = xMid - xhalfspan;
             XEnd = xMid + xhalfspan;
-            var yMid = YEnd - y * _yScale;
+            var yMid = YEnd - y * YScale;
             var yhalfspan = (YEnd - YStart) / 2;
             YStart = yMid - yhalfspan;
             YEnd = yMid + yhalfspan;
@@ -160,7 +167,7 @@ namespace Grapher
             }
             else
             {
-                return Left + (val - XStart) / _xScale;
+                return Left + (val - XStart) / XScale;
             }
         }
         public double ToYPix(double val)
@@ -171,7 +178,7 @@ namespace Grapher
             }
             else
             {
-                return Top + (YEnd - val) / _yScale;
+                return Top + (YEnd - val) / YScale;
             }
         }
 
@@ -184,11 +191,11 @@ namespace Grapher
         {
             if (useCornerQ)
             {
-                return XStart + (pix - Left) * _xScale;
+                return XStart + (pix - Left) * XScale;
             }
             else
             {
-                return XStart + pix * _xScale;
+                return XStart + pix * XScale;
             }
         }
 
@@ -196,11 +203,11 @@ namespace Grapher
         {
             if (useCornerQ)
             {
-                return YEnd - (pix - Top) * _yScale;
+                return YEnd - (pix - Top) * YScale;
             }
             else
             {
-                return YEnd - pix * _yScale;
+                return YEnd - pix * YScale;
             }
         }
 
@@ -318,22 +325,22 @@ namespace Grapher
             }
             var xSpan = XEnd - XStart;
             if (xSpan <= 0) xSpan = 1e-9;
-            _xScale = xSpan / Width;
+            XScale = xSpan / Width;
             _xLogScale = (Math.Log(XEnd) - Math.Log(XStart)) / Width;
             var ySpan = YEnd - YStart;
             if (ySpan <= 0) ySpan = 1e-9;
-            _yScale = ySpan / Height;
+            YScale = ySpan / Height;
             _yLogScale = (Math.Log(YEnd) - Math.Log(YStart)) / Height;
             if (_uniScaleQ && !UseXLog && !UseYLog)
             {
-                var newScale = Math.Max(_xScale, _yScale);
-                _xScale = newScale;
-                xSpan = _xScale * Width;
+                var newScale = Math.Max(XScale, YScale);
+                XScale = newScale;
+                xSpan = XScale * Width;
                 var xMid = (XStart + XEnd) / 2;
                 XStart = xMid - xSpan / 2;
                 XEnd = xMid + xSpan / 2;
-                _yScale = newScale;
-                ySpan = _yScale * Height;
+                YScale = newScale;
+                ySpan = YScale * Height;
                 var yMid = (YStart + YEnd) / 2;
                 YStart = yMid - ySpan / 2;
                 YEnd = yMid + ySpan / 2;

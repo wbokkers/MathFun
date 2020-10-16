@@ -16,6 +16,11 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel Margin="20">
+            <TextBox
+                x:Name="txtEquation"
+                Header="Equation"
+                Text="x^2+y^2=9"
+                TextChanged="OnEquationTextChanged" />
             <Slider
                 x:Name="zoomSlider"
                 Width="400"
@@ -28,10 +33,14 @@
                 ValueChanged="OnZoomChange"
                 Value="0.5" />
             <Button HorizontalAlignment="Center" Click="ResetView">Reset</Button>
+            <TextBlock x:Name="txtTime" HorizontalAlignment="Center" />
         </StackPanel>
         <Viewbox
             x:Name="viewBox"
             Grid.Row="1"
+            MaxWidth="500"
+            MaxHeight="500"
+            Margin="10"
             Stretch="Uniform">
             <win2d:CanvasControl
                 x:Name="canvas"
