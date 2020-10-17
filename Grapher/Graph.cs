@@ -9,11 +9,11 @@ namespace Grapher
     {
         private readonly CanvasDrawingSession _ds;
         private readonly Coords _coords;
-        private bool _xLinesQ = true;
-        private bool _yLinesQ = true;
-        private bool _showXValues = true;
-        private bool _showYValues = true;
-        private bool _skewQ = false;
+        private bool _horizontalLinesVisible = true;
+        private bool _verticalLinesVisible = true;
+        private bool _xValuesVisible = true;
+        private bool _yValuesVisible = true;
+        private bool _isSkewed = false;
 
         private double _hzAxisY;
         private double _hzNumsY;
@@ -44,9 +44,9 @@ namespace Grapher
             }
             else
             {
-                if (_xLinesQ)
+                if (_horizontalLinesVisible)
                 {
-                    DrawHzLines();
+                    DrawHorizontalLines();
                 }
             }
             if (_coords.UseYLog)
@@ -55,9 +55,9 @@ namespace Grapher
             }
             else
             {
-                if (_yLinesQ)
+                if (_verticalLinesVisible)
                 {
-                    DrawVtLines();
+                    DrawVerticalLines();
                 }
             }
         }
@@ -67,7 +67,7 @@ namespace Grapher
             throw new System.NotImplementedException();
         }
 
-        private void DrawHzLines()
+        private void DrawHorizontalLines()
         {
             var ticks = _coords.GetTicks(_coords.YStart, _coords.YEnd - _coords.YStart, _coords.Width/200);
             var tickFontFormat = new CanvasTextFormat
@@ -94,13 +94,13 @@ namespace Grapher
                      (float)_coords.ToXPix(_coords.XEnd), (float)yPix,
                     strokeStyle, strokeWidth: 1.0f);
 
-                if (tickLevel == 0 && _showYValues && yVal != 0)
+                if (tickLevel == 0 && _yValuesVisible && yVal != 0)
                 {
                     _ds.DrawText(yVal.ToString(), (float)_vtNumsX, (float)yPix, Colors.DarkGreen,
                         tickFontFormat);
                 }
             }
-            if (_skewQ) return;
+            if (_isSkewed) return;
 
             // horizontal axis
             _ds.DrawLine(
@@ -114,7 +114,7 @@ namespace Grapher
         {
         }
 
-        private void DrawVtLines()
+        private void DrawVerticalLines()
         {
             var ticks = _coords.GetTicks(_coords.XStart, _coords.XEnd - _coords.XStart, _coords.Height/200);
             var tickFontFormat = new CanvasTextFormat
@@ -141,13 +141,13 @@ namespace Grapher
                     (float)xPix, (float)_coords.ToYPix(_coords.YEnd),
                     strokeStyle, strokeWidth: 1.0f);
 
-                if (tickLevel == 0 && _showXValues && xVal != 0)
+                if (tickLevel == 0 && _xValuesVisible && xVal != 0)
                 {
                     _ds.DrawText(xVal.ToString(), (float)xPix, (float)_hzNumsY, Colors.DarkBlue,
                         tickFontFormat);
                 }
             }
-            if (_skewQ) return;
+            if (_isSkewed) return;
 
             // vertical axis
             _ds.DrawLine(

@@ -1,10 +1,5 @@
-﻿using Microsoft.Graphics.Canvas.Effects;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using Windows.UI.Xaml.Automation.Peers;
 
 namespace Grapher
 {
@@ -18,13 +13,6 @@ namespace Grapher
 
         public double X { get; set; }
         public double Y { get; set; }
-
-        internal Pt TranslatePolar(double angle, double r)
-        {
-            var dx = r * Math.Cos(angle);
-            var dy = r * Math.Sin(angle);
-            return new Pt(X + dx, Y + dy); // not sure if this is correct
-        }
     }
 
     internal class Tick
@@ -42,7 +30,7 @@ namespace Grapher
 
     internal class Coords
     {
-        private bool _uniScaleQ; // use uniform scaling? (same scale in both directions)
+        private bool _useUniformScaling; // use uniform scaling? (same scale in both directions)
 
         private double _xLogScale; // calculated 
         private double _yLogScale; // calculated
@@ -62,17 +50,17 @@ namespace Grapher
         public bool UseXLog { get; private set; } // use log x scaling?
         public bool UseYLog { get; private set; } // use log y scaling?
 
-        public Coords(int left, int top, int width, int height, double xStt, double yStt, double xEnd, double yEnd, bool uniScaleQ)
+        public Coords(int left, int top, int width, int height, double xStart, double yStart, double xEnd, double yEnd, bool useUniformScaling)
         {
             Left = left;
             Top = top;
             Width = width;
             Height = height;
-            XStart = xStt;
-            YStart = yStt;
+            XStart = xStart;
+            YStart = yStart;
             XEnd = xEnd;
             YEnd = yEnd;
-            _uniScaleQ = uniScaleQ;
+            _useUniformScaling = useUniformScaling;
             UseXLog = false;
             UseYLog = false;
             CalcScale();
@@ -222,10 +210,10 @@ namespace Grapher
             {
                 tick = tickStart + i * inter;
                 tick = Math.Round(tick, 8);
-                ticks.Add(new Tick(tick,1));
+                ticks.Add(new Tick(tick, 1));
                 i++;
             } while (tick < start + span);
-            
+
             // Set inner tick levels to 0
             inter = TickInterval(span / ratio, true);
             for (i = 0; i < ticks.Count; i++)
@@ -331,7 +319,7 @@ namespace Grapher
             if (ySpan <= 0) ySpan = 1e-9;
             YScale = ySpan / Height;
             _yLogScale = (Math.Log(YEnd) - Math.Log(YStart)) / Height;
-            if (_uniScaleQ && !UseXLog && !UseYLog)
+            if (_useUniformScaling && !UseXLog && !UseYLog)
             {
                 var newScale = Math.Max(XScale, YScale);
                 XScale = newScale;
