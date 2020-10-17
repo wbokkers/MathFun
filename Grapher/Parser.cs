@@ -9,19 +9,21 @@ namespace Grapher
     internal class Parser
     {
         private List<MathNode> _tempNode = new List<MathNode>();
-        private bool _radiansQ = true;
+        private bool _useRadians = true;
         private const string _operators = "+-*(/),^.";
         private const char _variable = 'x';
         private string _errMsg;
-        private Dictionary<string, double> _varValues = new Dictionary<string, double>();
-
+        private double[] _varValues = new double[26];
+    
         public Parser()
         {
         }
 
-        public void SetVarVal(string varName, double newVal)
+        public void SetVarVal(char varName, double newVal)
         {
-            _varValues[varName] = newVal;
+            var varIndex = varName - 'a';
+            if (varIndex >= 0 && varIndex < 26)
+                _varValues[varIndex] = newVal;
         }
 
         public double GetVal()
@@ -62,11 +64,11 @@ namespace Grapher
         {
             if (string.IsNullOrEmpty(s))
             {
-                return new MathNode("real", "0", _radiansQ);
+                return new MathNode(NodeType.Real, "0", _useRadians);
             }
             if ( IsNumeric(s))
             {
-                return new MathNode("real", s, _radiansQ);
+                return new MathNode(NodeType.Real, s, _useRadians);
             }
             if (s[0] == '$')
             {
@@ -81,14 +83,14 @@ namespace Grapher
             {
                 if (sLo[0] >= 'a' && sLo[0] <= 'z')
                 {
-                    return new MathNode("var", sLo, _radiansQ);
+                    return new MathNode(NodeType.Variable, sLo, _useRadians);
                 }
             }
 
             switch (sLo)
             {
                 case "pi":
-                    return new MathNode("var", sLo, _radiansQ);
+                    return new MathNode(NodeType.Variable, sLo, _useRadians);
             }
      
             var bracStt = s.LastIndexOf('(');
@@ -98,7 +100,7 @@ namespace Grapher
                 if (bracEnd < 0)
                 {
                     _errMsg += "Missing ')'\n";
-                    return new MathNode("real", "0", _radiansQ);
+                    return new MathNode(NodeType.Real, "0", _useRadians);
                 }
                 bool isParam;
                 if (bracStt == 0)
@@ -133,7 +135,7 @@ namespace Grapher
                             break;
                         }
                     }
-                    var nnew = new MathNode("func", s.Substring(startM + 1, bracStt - 1 - startM), _radiansQ);
+                    var nnew = new MathNode(NodeType.Function, s.Substring(startM + 1, bracStt - 1 - startM), _useRadians);
                     nnew.AddChild(Parse(s.Substring(bracStt + 1, bracEnd - bracStt - 1)));
                     _tempNode.Add(nnew);
                     return Parse(
@@ -152,7 +154,7 @@ namespace Grapher
                 if (k1 > k2)
                 {
                     k = k1;
-                    var nnew = new MathNode("op", "add", _radiansQ);
+                    var nnew = new MathNode(NodeType.Operation, "add", _useRadians);
                     nnew.AddChild(Parse(s.Substring(0, k)));
                     nnew.AddChild(Parse(s.Substring(k + 1, s.Length - k - 1)));
                     return nnew;
@@ -160,7 +162,7 @@ namespace Grapher
                 else
                 {
                     k = k2;
-                    var nnew = new MathNode("op", "sub", _radiansQ);
+                    var nnew = new MathNode(NodeType.Operation, "sub", _useRadians);
                     nnew.AddChild(Parse(s.Substring(0, k)));
                     nnew.AddChild(Parse(s.Substring(k + 1, s.Length - k - 1)));
                     return nnew;
@@ -173,7 +175,7 @@ namespace Grapher
                 if (k1 > k2)
                 {
                     k = k1;
-                    var nnew = new MathNode("op", "mult", _radiansQ);
+                    var nnew = new MathNode(NodeType.Operation, "mult", _useRadians);
                     nnew.AddChild(Parse(s.Substring(0, k)));
                     nnew.AddChild(Parse(s.Substring(k + 1, s.Length - k - 1)));
                     return nnew;
@@ -181,7 +183,7 @@ namespace Grapher
                 else
                 {
                     k = k2;
-                    var nnew = new MathNode("op", "div", _radiansQ);
+                    var nnew = new MathNode(NodeType.Operation, "div", _useRadians);
                     nnew.AddChild(Parse(s.Substring(0, k)));
                     nnew.AddChild(Parse(s.Substring(k + 1, s.Length - k - 1)));
                     return nnew;
@@ -190,25 +192,25 @@ namespace Grapher
             k = s.IndexOf('^');
             if (k > -1)
             {
-                var nnew = new MathNode("op", "pow", _radiansQ);
+                var nnew = new MathNode(NodeType.Operation, "pow", _useRadians);
                 nnew.AddChild(Parse(s.Substring(0, k)));
                 nnew.AddChild(Parse(s.Substring(k + 1, s.Length - k - 1)));
                 return nnew;
             }
             if (IsNumeric(s))
             {
-                return new MathNode("real", s, _radiansQ);
+                return new MathNode(NodeType.Real, s, _useRadians);
             }
             else
             {
                 if (s.Length == 0)
                 {
-                    return new MathNode("real", "0", _radiansQ);
+                    return new MathNode(NodeType.Real, "0", _useRadians);
                 }
                 else
                 {
                     _errMsg += "'" + s + "' is not a number.\n";
-                    return new MathNode("real", "0", _radiansQ);
+                    return new MathNode(NodeType.Real, "0", _useRadians);
                 }
             }
         }

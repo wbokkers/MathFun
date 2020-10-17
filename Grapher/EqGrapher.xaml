@@ -38,21 +38,21 @@
         <Viewbox
             x:Name="viewBox"
             Grid.Row="1"
-            MaxWidth="500"
-            MaxHeight="500"
             Margin="10"
             Stretch="Uniform">
-            <win2d:CanvasControl
-                x:Name="canvas"
-                Width="{x:Bind _graphWd}"
-                Height="{x:Bind _graphHt}"
-                Background="White"
-                ClearColor="White"
-                CreateResources="OnCreateResources"
-                Draw="OnDraw"
-                PointerMoved="OnPointerMoved"
-                PointerPressed="OnPointerPressed"
-                PointerReleased="OnPointerReleased" />
+            <Border BorderBrush="Gray" BorderThickness="1">
+                <win2d:CanvasControl
+                    x:Name="canvas"
+                    Width="{x:Bind _graphWd}"
+                    Height="{x:Bind _graphHt}"
+                    Background="White"
+                    ClearColor="White"
+                    CreateResources="OnCreateResources"
+                    Draw="OnDraw"
+                    PointerMoved="OnPointerMoved"
+                    PointerPressed="OnPointerPressed"
+                    PointerReleased="OnPointerReleased" />
+            </Border>
         </Viewbox>
     </Grid>
 </UserControl>

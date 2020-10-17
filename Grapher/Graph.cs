@@ -11,8 +11,8 @@ namespace Grapher
         private readonly Coords _coords;
         private bool _xLinesQ = true;
         private bool _yLinesQ = true;
-        private bool _xValsQ = true;
-        private bool _yValsQ = true;
+        private bool _showXValues = true;
+        private bool _showYValues = true;
         private bool _skewQ = false;
 
         private double _hzAxisY;
@@ -64,16 +64,17 @@ namespace Grapher
 
         private void DrawLinesLogX()
         {
+            throw new System.NotImplementedException();
         }
 
         private void DrawHzLines()
         {
-            var ticks = _coords.GetTicks(_coords.YStart, _coords.YEnd - _coords.YStart, 4);
+            var ticks = _coords.GetTicks(_coords.YStart, _coords.YEnd - _coords.YStart, _coords.Width/200);
             var tickFontFormat = new CanvasTextFormat
             {
-                FontFamily = "Verdana",
-                FontWeight = FontWeights.Bold,
-                FontSize = 12,
+                FontFamily = "Segoe UI",
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 13,
                 VerticalAlignment = CanvasVerticalAlignment.Center,
                 HorizontalAlignment = CanvasHorizontalAlignment.Right
             };
@@ -93,9 +94,9 @@ namespace Grapher
                      (float)_coords.ToXPix(_coords.XEnd), (float)yPix,
                     strokeStyle, strokeWidth: 1.0f);
 
-                if (tickLevel == 0 && _yValsQ)
+                if (tickLevel == 0 && _showYValues && yVal != 0)
                 {
-                    _ds.DrawText(yVal.ToString(), (float)_vtNumsX, (float)yPix, Colors.Red,
+                    _ds.DrawText(yVal.ToString(), (float)_vtNumsX, (float)yPix, Colors.DarkGreen,
                         tickFontFormat);
                 }
             }
@@ -105,7 +106,7 @@ namespace Grapher
             _ds.DrawLine(
                 (float)_coords.ToXPix(_coords.XStart), (float)_hzAxisY,
                 (float)_coords.ToXPix(_coords.XEnd), (float)_hzAxisY,
-                Colors.Blue, strokeWidth: 2f);
+                Colors.DarkBlue, strokeWidth: 2f);
 
         }
 
@@ -115,12 +116,12 @@ namespace Grapher
 
         private void DrawVtLines()
         {
-            var ticks = _coords.GetTicks(_coords.XStart, _coords.XEnd - _coords.XStart, 4);
+            var ticks = _coords.GetTicks(_coords.XStart, _coords.XEnd - _coords.XStart, _coords.Height/200);
             var tickFontFormat = new CanvasTextFormat
             {
-                FontFamily = "Verdana",
-                FontWeight = FontWeights.Bold,
-                FontSize = 12,
+                FontFamily = "Segoe UI",
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 13,
                 VerticalAlignment = CanvasVerticalAlignment.Center,
                 HorizontalAlignment = CanvasHorizontalAlignment.Center
             };
@@ -140,9 +141,9 @@ namespace Grapher
                     (float)xPix, (float)_coords.ToYPix(_coords.YEnd),
                     strokeStyle, strokeWidth: 1.0f);
 
-                if (tickLevel == 0 && _xValsQ)
+                if (tickLevel == 0 && _showXValues && xVal != 0)
                 {
-                    _ds.DrawText(xVal.ToString(), (float)xPix, (float)_hzNumsY, Colors.Blue,
+                    _ds.DrawText(xVal.ToString(), (float)xPix, (float)_hzNumsY, Colors.DarkBlue,
                         tickFontFormat);
                 }
             }
@@ -152,7 +153,7 @@ namespace Grapher
             _ds.DrawLine(
                 (float)_vtAxisX, (float)_coords.ToYPix(_coords.YStart),
                 (float)_vtAxisX, (float)_coords.ToYPix(_coords.YEnd),
-                Colors.Red, strokeWidth: 1.5f);
+                Colors.DarkGreen, strokeWidth: 2f);
         }
     }
 }
