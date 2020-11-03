@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 
 namespace Grapher
 {
@@ -20,7 +19,7 @@ namespace Grapher
 
         private int _childCount = 0;
         private readonly List<MathNode> _child = new List<MathNode>();
-        
+
         public NodeType Type { get; private set; }
         public bool UseRadians { get; private set; }
 
@@ -61,7 +60,7 @@ namespace Grapher
         internal double Walk(double[] vals)
         {
             if (Type == NodeType.Real) return _real;
-            
+
             if (Type == NodeType.Variable)
             {
                 switch (_value)
@@ -83,7 +82,7 @@ namespace Grapher
             var val = 0.0;
             if (Type == NodeType.Operation)
             {
-                for(var i = 0; i < _childCount; i++)
+                for (var i = 0; i < _childCount; i++)
                 {
                     var val2 = 0.0;
                     if (_child[i] != null) val2 = _child[i].Walk(vals);
@@ -122,13 +121,13 @@ namespace Grapher
                 }
                 return val;
             }
-            
+
             if (Type == NodeType.Function)
             {
                 var lhs = _child[0].Walk(vals);
                 var angleFact = 1.0;
                 if (!UseRadians) angleFact = 180.0 / Math.PI;
-    
+
                 switch (_op)
                 {
                     case "sin":
@@ -227,8 +226,8 @@ namespace Grapher
             return f;
         }
 
-     
-     
+
+
         private void Clear()
         {
             _real = 1;
@@ -248,8 +247,8 @@ namespace Grapher
         internal bool IsLeaf => _childCount == 0;
 
 
-       
+
     }
 
-   
+
 }
